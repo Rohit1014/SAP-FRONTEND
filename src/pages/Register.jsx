@@ -1,317 +1,291 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  FaUser,
-  FaEnvelope,
-  FaPhone,
-  FaLock,
-  FaEye,
-  FaEyeSlash,
-  FaGraduationCap,
-  FaGoogle,
-} from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { registerUser } from "../api";
 
 export default function Register() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+
+    setError("");
+    setSuccess("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    try {
+      const data = await registerUser(formData);
+
+      if (data.success || data.message) {
+        setSuccess(
+          data.message || "Account created successfully."
+        );
+
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+        });
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      } else {
+        setError("Registration failed. Please try again.");
+      }
+    } catch (err) {
+      setError(
+        err.message || "Unable to create account. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-cyan-700 flex items-center justify-center px-4 py-10">
-
-      <div className="w-full max-w-7xl overflow-hidden rounded-3xl bg-white shadow-2xl grid lg:grid-cols-2">
+    <div className="min-h-screen bg-slate-50">
+      <div className="grid min-h-screen lg:grid-cols-2">
 
         {/* LEFT SIDE */}
+        <div className="hidden bg-slate-900 lg:flex lg:flex-col lg:justify-between">
 
-        <div className="hidden lg:flex flex-col justify-center bg-gradient-to-br from-blue-800 via-blue-700 to-cyan-600 p-12 text-white">
-
-          <div className="flex items-center gap-4">
-
-            <div className="rounded-full bg-white p-4 text-blue-700">
-              <FaGraduationCap size={40} />
-            </div>
-
-            <div>
-              <h1 className="text-4xl font-bold">
-                SAP Academy
-              </h1>
-
-              <p className="text-blue-100">
-                Learn • Practice • Get Certified
-              </p>
-            </div>
-
+          {/* Logo */}
+          <div className="p-10">
+            <Link
+              to="/"
+              className="text-2xl font-bold text-white"
+            >
+              SAP<span className="text-blue-400">Academy</span>
+            </Link>
           </div>
 
-          <h2 className="mt-12 text-5xl font-bold leading-tight">
-            Create Your
-            <br />
-            Learning Account
-          </h2>
+          {/* Content */}
+          <div className="px-16 pb-20">
+            <p className="text-sm font-semibold uppercase tracking-widest text-blue-400">
+              Start learning
+            </p>
 
-          <p className="mt-8 text-lg leading-8 text-blue-100">
-            Register now and start learning SAP from industry experts.
-            Access live classes, recordings, projects, quizzes and placement
-            support.
-          </p>
+            <h1 className="mt-4 max-w-lg text-4xl font-bold leading-tight text-white xl:text-5xl">
+              Build skills.
+              <br />
+              Build your future.
+            </h1>
 
+            <p className="mt-6 max-w-md text-base leading-7 text-slate-400">
+              Create your account and start learning practical skills in SAP
+              and modern web development.
+            </p>
+
+            {/* Benefits */}
+            <div className="mt-10 space-y-4">
+
+              <div className="flex items-center gap-3">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-400">
+                  ✓
+                </div>
+
+                <p className="text-sm text-slate-300">
+                  Practical learning
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-400">
+                  ✓
+                </div>
+
+                <p className="text-sm text-slate-300">
+                  Industry-focused courses
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-400">
+                  ✓
+                </div>
+
+                <p className="text-sm text-slate-300">
+                  SAP & Web Development
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="p-10 text-xs text-slate-600">
+            © {new Date().getFullYear()} SAP Academy
+          </div>
         </div>
 
         {/* RIGHT SIDE */}
+        <div className="flex items-center justify-center px-6 py-12 sm:px-10">
 
-        <div className="flex items-center justify-center p-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="w-full max-w-md"
+          >
 
-          <div className="w-full max-w-lg">
-
-            <div className="text-center">
-
-              <h2 className="text-4xl font-bold text-gray-800">
-                Create Account
-              </h2>
-
-              <p className="mt-2 text-gray-500">
-                Register to begin your SAP journey.
-              </p>
-
+            {/* Mobile Logo */}
+            <div className="mb-10 lg:hidden">
+              <Link
+                to="/"
+                className="text-2xl font-bold text-slate-900"
+              >
+                SAP<span className="text-blue-600">Academy</span>
+              </Link>
             </div>
 
-            <form className="mt-8 space-y-5">
+            {/* Heading */}
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+                Create account
+              </p>
 
-              {/* Full Name */}
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+                Start your learning journey
+              </h2>
 
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Create your account to access courses and begin learning.
+              </p>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+
+            {/* Success */}
+            {success && (
+              <div className="mt-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                {success}
+              </div>
+            )}
+
+            {/* FORM */}
+            <form
+              onSubmit={handleSubmit}
+              className="mt-8 space-y-5"
+            >
+
+              {/* Name */}
               <div>
-
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Full Name
                 </label>
 
-                <div className="flex items-center rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-200">
-
-                  <FaUser className="mr-3 text-gray-400" />
-
-                  <input
-                    type="text"
-                    placeholder="Enter your full name"
-                    className="w-full bg-transparent text-sm outline-none"
-                  />
-
-                </div>
-
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                  required
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                />
               </div>
 
               {/* Email */}
-
               <div>
-
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Email Address
                 </label>
 
-                <div className="flex items-center rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-200">
-
-                  <FaEnvelope className="mr-3 text-gray-400" />
-
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="w-full bg-transparent text-sm outline-none"
-                  />
-
-                </div>
-
-              </div>
-
-              {/* Mobile */}
-
-              <div>
-
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Mobile Number
-                </label>
-
-                <div className="flex items-center rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-200">
-
-                  <FaPhone className="mr-3 text-gray-400" />
-
-                  <input
-                    type="tel"
-                    placeholder="Enter mobile number"
-                    className="w-full bg-transparent text-sm outline-none"
-                  />
-
-                </div>
-
-              </div>
-
-              {/* Course */}
-
-              <div>
-
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Select SAP Course
-                </label>
-
-                <select className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-blue-600">
-
-                  <option>Select Course</option>
-                  <option>SAP FICO</option>
-                  <option>SAP MM</option>
-                  <option>SAP SD</option>
-                  <option>SAP ABAP</option>
-                  <option>SAP BASIS</option>
-                  <option>SAP PP</option>
-                  <option>SAP QM</option>
-
-                </select>
-
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@example.com"
+                  required
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                />
               </div>
 
               {/* Password */}
-
               <div>
-
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Password
                 </label>
 
-                <div className="flex items-center rounded-lg border border-gray-300 bg-gray-50 px-4 py-3">
-
-                  <FaLock className="mr-3 text-gray-400" />
-
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Create password"
-                    className="w-full bg-transparent text-sm outline-none"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <FaEyeSlash />
-                    ) : (
-                      <FaEye />
-                    )}
-                  </button>
-
-                </div>
-
-              </div>
-                            {/* Confirm Password */}
-
-              <div>
-
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Confirm Password
-                </label>
-
-                <div className="flex items-center rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-200">
-
-                  <FaLock className="mr-3 text-gray-400" />
-
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm password"
-                    className="w-full bg-transparent text-sm outline-none"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowConfirmPassword(!showConfirmPassword)
-                    }
-                  >
-                    {showConfirmPassword ? (
-                      <FaEyeSlash className="text-gray-500" />
-                    ) : (
-                      <FaEye className="text-gray-500" />
-                    )}
-                  </button>
-
-                </div>
-
-              </div>
-
-              {/* Terms & Conditions */}
-
-              <div className="flex items-start gap-3">
-
                 <input
-                  type="checkbox"
-                  className="mt-1 h-4 w-4 rounded border-gray-300"
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Create a password"
+                  required
+                  minLength={6}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                 />
 
-                <p className="text-sm text-gray-600">
-                  I agree to the{" "}
-                  <span className="font-semibold text-blue-700 cursor-pointer hover:underline">
-                    Terms & Conditions
-                  </span>{" "}
-                  and{" "}
-                  <span className="font-semibold text-blue-700 cursor-pointer hover:underline">
-                    Privacy Policy
-                  </span>
+                <p className="mt-2 text-xs text-slate-400">
+                  Password must contain at least 6 characters.
                 </p>
-
               </div>
 
-              {/* Register Button */}
-
+              {/* Submit */}
               <button
                 type="submit"
-                className="w-full rounded-lg bg-blue-700 py-3 text-base font-semibold text-white transition-all duration-300 hover:bg-blue-800 hover:shadow-lg"
+                disabled={loading}
+                className="w-full rounded-xl bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Create Account
-              </button>
-
-              {/* Divider */}
-
-              <div className="flex items-center gap-4">
-
-                <div className="h-px flex-1 bg-gray-300"></div>
-
-                <span className="text-sm text-gray-400">
-                  OR
-                </span>
-
-                <div className="h-px flex-1 bg-gray-300"></div>
-
-              </div>
-
-              {/* Google Sign Up */}
-
-              <button
-                type="button"
-                className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white py-3 font-semibold text-gray-700 transition-all duration-300 hover:bg-gray-100"
-              >
-                <FaGoogle className="text-red-500" />
-                Continue with Google
+                {loading ? "Creating account..." : "Create Account"}
               </button>
 
             </form>
 
-            {/* Login Link */}
-
-            <div className="mt-8 text-center">
-
-              <p className="text-gray-600">
-                Already have an account?
+            {/* Login */}
+            <div className="mt-8 border-t border-slate-200 pt-6 text-center">
+              <p className="text-sm text-slate-500">
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="font-semibold text-blue-600 hover:text-blue-700"
+                >
+                  Sign in
+                </Link>
               </p>
-
-              <Link
-                to="/login"
-                className="mt-2 inline-block font-semibold text-blue-700 hover:text-blue-900"
-              >
-                Login Here
-              </Link>
-
             </div>
 
-          </div>
+            {/* Back */}
+            <div className="mt-6 text-center">
+              <Link
+                to="/home"
+                className="text-xs font-medium text-slate-400 transition hover:text-slate-700"
+              >
+                ← Back to website
+              </Link>
+            </div>
 
+          </motion.div>
         </div>
-
       </div>
-
     </div>
   );
 }
